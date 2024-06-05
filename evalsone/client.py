@@ -13,15 +13,15 @@ class Message(BaseModel):
     content: str
 
 class SampleData(BaseModel):
-    sid: str
     messages: List[Message]
     context: Optional[List[str]] = None
     ideal: Optional[List[str]] = None
 
 class EvalsOne:
-    def __init__(self, api_key: str, base_url: str = "https://api.evalsone.com"):
+    def __init__(self, api_key: str, sid: str, base_url: str = "https://api.evalsone.com"):
         self.api_key = api_key
         self.base_url = base_url
+        self.sid = sid
 
     def add_sample(self, sample_data: dict):
         """
@@ -32,14 +32,15 @@ class EvalsOne:
         if 'prompt' in sample_data and 'messages' not in sample_data:
             logger.warning("The 'prompt' field is deprecated and will be removed in future versions. Use 'messages' instead.")
             sample_data['messages'] = sample_data.pop('prompt')
-
+            
         try:
             # Validate data using Pydantic
             validated_data = SampleData(**sample_data)
         except ValidationError as e:
             logger.error(f"Data validation failed: {e.json()}")
             return {'error': 'Data validation failed', 'details': e.errors()}
-
+        
+        sample_data['sid'] = self.sid
         headers = {
             'Authorization': f'Bearer {self.api_key}',
             'Content-Type': 'application/json'

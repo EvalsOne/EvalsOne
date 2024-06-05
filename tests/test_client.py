@@ -5,7 +5,8 @@ from evalsone.client import EvalsOne, SampleData
 class TestEvalsOne(unittest.TestCase):
     def setUp(self):
         self.api_key = 'fake_api_key'
-        self.eo_client = EvalsOne(api_key=self.api_key)
+        self.dataset_id = 'fake_dataset_id'
+        self.eo_client = EvalsOne(api_key=self.api_key, dataset_id=self.dataset_id)
 
     @patch('evalsone.client.requests.post')
     def test_add_sample_successful(self, mock_post):
